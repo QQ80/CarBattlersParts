@@ -42,6 +42,7 @@ Release
 *.user
 *.depend
 *.filters
+*.opensdf
 
 # Temporaries
 */temp

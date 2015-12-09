@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 
-#define WINDOW_WIDTH 240 * 3
-#define WINDOW_HEIGHT 160 * 3
+#define WINDOW_WIDTH 720
+#define WINDOW_HEIGHT 480
 
 int main()
 {
