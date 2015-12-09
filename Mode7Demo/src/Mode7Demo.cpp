@@ -59,7 +59,6 @@ int main()
 
 		// Update
 		mode7.setParameter("offset", offset);
-		mode7.setParameter("fov", fov);
 		mode7.setParameter("scaling", scaling);
 		mode7.setParameter("angle", angle);
 

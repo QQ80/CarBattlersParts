@@ -5,6 +5,7 @@ uniform float fov;
 uniform float angle;
 uniform sampler2D texture;
 
+
 void main()
 {
 	vec2 pos = ( gl_FragCoord.xy / resolution.xy ) - vec2(0.5,0.5);
@@ -23,3 +24,4 @@ void main()
 
 	gl_FragColor = vec4( color );
 }
+
