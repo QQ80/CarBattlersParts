@@ -20,7 +20,6 @@ void main()
 	vec2 r = vec2(a.x * cos(angle) - a.y * sin(angle) , a.x * sin(angle) + a.y * cos(angle));
 
 	vec4 color = texture2D(texture, vec2(-r.x, r.y));
-	//fadingcolor *= p.z*p.z*10.0;
 
 	gl_FragColor = vec4( color );
 }
