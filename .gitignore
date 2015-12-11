@@ -1,23 +1,6 @@
 # Compiled Object files
-*.slo
-*.lo
 *.o
 *.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
 
 # Executables
 *.exe
@@ -27,22 +10,27 @@
 # External Libraries
 ext
 
-# Builds
+# Builds Directories
 Debug
 Release
+*/bin
+*/obj
 
-# IDE files
+# Visual Studio IDE files
 *.suo
 *.sdf
 *.sln
-*.workspace
-*.layout
-*.cbp
 *.vcxproj
 *.user
 *.depend
 *.filters
 *.opensdf
 
-# Temporaries
+# Code::Blocks IDE files
+*.workspace
+*.layout
+*.cbp
+
+# Temporaries & Backups
 */temp
+*.*~
