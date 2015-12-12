@@ -40,27 +40,47 @@ int main()
 				window.close();
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-			offset.y += 0.01f;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-			offset.x += 0.01f;
+		// Update + Detect Key
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+		{
 			offset.y -= 0.01f;
+			mode7.setParameter("offset", offset);
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+		{
+			offset.x += 0.01f;
+			mode7.setParameter("offset", offset);
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+		{
+			offset.y += 0.01f;
+			mode7.setParameter("offset", offset);
+		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+		{
 			offset.x -= 0.01f;
+			mode7.setParameter("offset", offset);
+		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
+		{
 			scaling += 0.01f;
+			mode7.setParameter("scaling", scaling);
+		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
+		{
 			scaling -= 0.01f;
+			mode7.setParameter("scaling", scaling);
+		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+		{
 			angle += 0.1f;
+			mode7.setParameter("angle", angle);
+		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+		{
 			angle -= 0.1f;
-
-		// Update
-		mode7.setParameter("offset", offset);
-		mode7.setParameter("scaling", scaling);
-		mode7.setParameter("angle", angle);
+			mode7.setParameter("angle", angle);
+		}
 
 		// Render
 		window.clear();
