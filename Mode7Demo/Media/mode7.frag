@@ -11,7 +11,7 @@ void main()
 
 	vec3 p = vec3(pos.x, fov, pos.y - 0.75f);
 	vec2 s = vec2(p.x/p.z, p.y/p.z) * scaling;
-	
+
 	// Add offset
     vec2 a = vec2(s.x + offset.x, s.y + offset.y);
 
