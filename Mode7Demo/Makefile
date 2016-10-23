@@ -14,7 +14,7 @@ SEARCHDIR = -L../ext/SFML-$(SFMLVER)/lib/ -I../ext/SFML-$(SFMLVER)/include
 all: Mode7Demo
 
 Mode7Demo:
-	 then $(CC) $(CFLAGS) ./src/Mode7Demo.cpp -o Mode7Demo $(LIBRARIES); else $(CC) $(CFLAGS) ./src/Mode7Demo.cpp -o Mode7Demo $(SEARCHDIR) $(LIBRARIES); fi
+	 if [ ! -d "../ext" ]; then $(CC) $(CFLAGS) ./src/Mode7Demo.cpp -o Mode7Demo $(LIBRARIES); else $(CC) $(CFLAGS) ./src/Mode7Demo.cpp -o Mode7Demo $(SEARCHDIR) $(LIBRARIES); fi
 
 clean:
 	rm Mode7Demo
