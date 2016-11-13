@@ -1,75 +1,77 @@
 #include <SFML/Graphics.hpp>
-
-const int window_width = 240;
-const int window_height = 160;
-const float speed = 15.f;
-const int scale = 4;
-const sf::VideoMode vidMode{window_width * scale, window_height * scale};
-const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
+#include <string>
+namespace
+{
+    const int           window_width            = 240;
+    const int           window_height           = 160;
+    const float         speed                   = 15.f;
+    const int           scale                   = 2;
+    const float         scaledSpeed             = speed * scale;
+    const sf::VideoMode vidMode                 {window_width * scale,
+                                                window_height * scale};
+    const sf::Time      TimePerFrame            = sf::seconds(1.f / 60.f);
+}
 
 class App
 {
-public:
-    App();
-    void run();
-private:
-    void processEvents();
-    void update(sf::Time deltaTime);
-    void render();
-    void resetBackground();
-private:
-    sf::RenderWindow m_window;
-    sf::Texture m_bgTex; // Background back
-    sf::Texture m_fgTex; // Background front
-    sf::Texture m_dgTex; // Dialogue Box
-    sf::Sprite m_bg;
-    sf::Sprite m_fg;
-    sf::Sprite m_dg;
-    sf::Vector2i m_movement;
+  public:
+                        App                     ();
+    void                run                     ();
+  private:
+    void                processEvents           ();
+    void                update                  (sf::Time deltaTime);
+    void                render                  ();
+    void                resetBackground         ();
+  private:
+    sf::RenderWindow    mWindow                 {vidMode, "Yay GBA!"};
+    sf::Texture         mBackgroundTexture;
+    sf::Texture         mForegroundTexture;
+    sf::Texture         mDialogueBoxTexture;
+    sf::Sprite          mBackground             {mBackgroundTexture};
+    sf::Sprite          mForeground             {mForegroundTexture};
+    sf::Sprite          mDialogueBox            {mDialogueBoxTexture};
+    sf::Vector2f        mMovement               {scaledSpeed, scaledSpeed};
 };
 
 App::App()
-: m_window(vidMode, "Yay GBA!")
-, m_bgTex()
-, m_fgTex()
-, m_dgTex()
-, m_bg(m_bgTex)
-, m_fg(m_fgTex)
-, m_dg()
-, m_movement(1, -1)
 {
-    m_bgTex.loadFromFile("Media/Machinesbgpink.png"); //muahahah real men dont handle errorsssss
-	m_bgTex.setRepeated(true);
-	m_bgTex.setSmooth(true);
+    auto setupTexture = [](sf::Texture& text,
+                           std::string  filePath,
+                           bool         setRepeated = false,
+                           bool         setSmooth   = false)
+    {
+        text.loadFromFile(filePath); // muahahah real men don't handle errorsss (They strong-arm users to leave the file alone)
+        text.setRepeated(setRepeated);
+        text.setSmooth(setSmooth);
+    };
+    setupTexture(mBackgroundTexture,  "Media/Machinesbgpink.png", true, true);
+    setupTexture(mForegroundTexture,  "Media/Machinesfgpink.png", true);
+    setupTexture(mDialogueBoxTexture, "Media/DialogueBox.png");
 
-	m_fgTex.loadFromFile("Media/Machinesfgpink.png");
-	m_fgTex.setRepeated(true);
-	//m_fgTex.setSmooth(true);
+    // Get (64+240+64)*(64+160+64) of texture
+    const sf::IntRect textureRec{0, 0, 368, 288};
+    auto setupSprite = [&](sf::Sprite& sprite)
+    {
+        sprite.setTextureRect(textureRec);
+        sprite.setOrigin(64, 64);
+        sprite.scale(scale, scale);
+        //sprite.setPosition(0, 0); (implied)
+    };
+    setupSprite(mBackground);
+    setupSprite(mForeground);
 
-	m_dgTex.loadFromFile("Media/DialogueBox.png");
-
-	m_bg.setTextureRect(sf::IntRect(0, 0, 368, 288)); // Get (64+240+64)x(64+160+64) of texture
-	m_bg.setOrigin(64, 64);
-	m_bg.scale(scale, scale);
-	//m_bg.setPosition(0, 0); //implied
-
-	m_fg.setTextureRect(sf::IntRect(0, 0, 368, 288));
-	m_fg.setOrigin(64, 64);
-	m_fg.scale(scale, scale);
-	//m_fg.setPosition(0, 0); //implied
-
-    m_dg.setTexture(m_dgTex);
-	m_dg.setPosition(32 * scale, 70 * scale) ;
-	m_dg.scale(scale, scale);
+    mDialogueBox.setTextureRect(sf::IntRect(0, 0, 176, 72));
+    mDialogueBox.setPosition(32 * scale, 70 * scale) ;
+    mDialogueBox.scale(scale, scale);
 }
 
 void App::run()
 {
     // Main loop
     sf::Clock clock;
-    sf::Time timeSinceLastUpdate = sf::Time::Zero; //lol temp solution for now
-	while (m_window.isOpen())
-	{
+    sf::Time timeSinceLastUpdate = sf::Time::Zero;
+    while (mWindow.isOpen())
+    {
         timeSinceLastUpdate += clock.restart();
         while (timeSinceLastUpdate > TimePerFrame)
         {
@@ -78,78 +80,87 @@ void App::run()
             update(TimePerFrame);
         }
         render();
-	}
+    }
 }
 
 void App::processEvents()
 {
     sf::Event event;
-    while (m_window.pollEvent(event))
+    while (mWindow.pollEvent(event))
     {
         // The 4 diagonal directions
         if (event.type == sf::Event::KeyPressed)
         {
-            if (event.key.code == sf::Keyboard::Numpad1)
-            {// foreground moves towards lower left
-                m_movement = sf::Vector2i(-1, 1);
-                resetBackground();
-            }
+            if      (event.key.code == sf::Keyboard::Numpad1)
+                mMovement = sf::Vector2f(-1.f, +1.f) * scaledSpeed;
             else if (event.key.code == sf::Keyboard::Numpad3)
-            {// foreground moves towards lower right
-                m_movement = sf::Vector2i(1, 1);
-                resetBackground();
-            }
+                mMovement = sf::Vector2f(+1.f, +1.f) * scaledSpeed;
             else if (event.key.code == sf::Keyboard::Numpad7)
-            {// foreground moves towards upper left
-                m_movement = sf::Vector2i(-1, -1);
-                resetBackground();
-            }
+                mMovement = sf::Vector2f(-1.f, -1.f) * scaledSpeed;
             else if (event.key.code == sf::Keyboard::Numpad9)
-            {// foreground moves towards upper right
-                m_movement = sf::Vector2i(1, -1);
-                resetBackground();
-            }
+                mMovement = sf::Vector2f(+1.f, -1.f) * scaledSpeed;
+            else
+                mMovement = sf::Vector2f( 0.f,  0.f);
+            resetBackground();
         }
-
         if (event.type == sf::Event::Closed)
-            m_window.close();
+            mWindow.close();
     }
 }
 
 void App::update(sf::Time deltaTime)
 {
-    auto mov = sf::Vector2f(m_movement * scale) * speed * deltaTime.asSeconds();
-    m_fg.move(mov);
-    m_bg.move(-mov);
-    if (m_fg.getPosition().x * m_movement.x >= 64 * scale)
-        resetBackground();
-    /*
-    if (m_fg.getPosition().x * m_movement.x >= 64 * scale ||
-        m_fg.getPosition().y * m_movement.y >= 64 * scale)
-        m_fg.setPosition(0, 0);
+    const sf::Vector2f mov = mMovement * deltaTime.asSeconds();
+    mForeground.move( mov);
+    mBackground.move(-mov);
 
-    m_bg.move(m_movement * -speed * scale * deltaTime.asSeconds());
-    if ( -m_bg.getPosition().x * m_movement.x >= 64 * scale ||
-         -m_bg.getPosition().y * m_movement.y >= 64 * scale)
-        m_bg.setPosition(0, 0);
+    const sf::Vector2f unitMovement = mMovement / scaledSpeed;
+    const float Xdisplaced = mForeground.getPosition().x * unitMovement.x;
+    if (Xdisplaced >= 64.f * scale) resetBackground();
+    /*
+    const float Ydisplaced = mForeground.getPosition().y * unitMovement.y;
+    if      (+Xdisplaced >= 64.f * scale)
+    {
+        mov = sf::Vector2f(-64.f * scale, 0);
+        mForeground.move( mov);
+        mBackground.move(-mov);
+    }
+    else if (+Ydisplaced >= 64.f * scale)
+    {
+        mov = sf::Vector2f(0, -64.f * scale);
+        mForeground.move( mov);
+        mBackground.move(-mov);
+    }
+    else if (-Xdisplaced >= 64.f * scale)
+    {
+        mov = sf::Vector2f(64.f * scale, 0);
+        mForeground.move( mov);
+        mBackground.move(-mov);
+    }
+    else if (-Ydisplaced >= 64.f * scale)
+    {
+        mov = sf::Vector2f(0, 64.f * scale);
+        mForeground.move( mov);
+        mBackground.move(-mov);
+    }
     */
 }
 
 void App::render()
 {
-    m_window.clear();
+    mWindow.clear();
 
-    m_window.draw(m_bg);
-    m_window.draw(m_fg);
-    m_window.draw(m_dg);
+    mWindow.draw(mBackground);
+    mWindow.draw(mForeground);
+    mWindow.draw(mDialogueBox);
 
-    m_window.display();
+    mWindow.display();
 }
 
 void App::resetBackground()
 {
-    m_fg.setPosition(0, 0);
-    m_bg.setPosition(0, 0);
+    mForeground.setPosition(0, 0);
+    mBackground.setPosition(0, 0);
 }
 
 int main()
@@ -157,5 +168,6 @@ int main()
     App app;
     app.run();
 
-	return 0;
+    return 0;
 }
+
